@@ -45,7 +45,16 @@ def process_file(uploaded_file, st):
     return documents, new_files
 
 
+def check_for_files():
+    if not os.path.exists('app_database/files.txt'):
+        with open('app_database/files.txt','w') as f:
+            f.close()
+    if not os.path.exists('app_database/result.txt')==0:
+        with open('app_database/result.txt','w') as f:
+            f.close()
+
 def check_for_new_files(files, st):
+    check_for_files()
     files = list(set(files))
     old_files = read_old_file_names()
     if old_files==files:
