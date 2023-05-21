@@ -1,9 +1,9 @@
 import os 
 import streamlit as st
 import json
-from doc_utils import process_file
-from text_preprocessing import get_chunks
-from models import build_model_and_db
+from src.doc_utils import process_file
+from src.text_preprocessing import get_chunks
+from src.models import build_model_and_db
 
 st.set_page_config(page_title='DocBot', layout = 'wide', initial_sidebar_state = 'auto') # page_icon=None
 # favicon being an object of the same kind as the one you should provide st.image() with (ie. a PIL array for example) or a string (url or local file path)
