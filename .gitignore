@@ -1,3 +1,4 @@
 data/*
 app_database/*
 secrets.py
+*__pycache__/*
