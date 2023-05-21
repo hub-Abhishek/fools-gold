@@ -29,7 +29,7 @@ api_token = st.text_input('API TOKEN', value="api_token", max_chars=500, key="ap
 
 os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token
 
-if len(uploaded_file)!=0 is not None and api_token != 'api_token':
+if len(uploaded_file)!=0 and api_token != 'api_token':
     documents, new_files = process_file(uploaded_file, st)
     
     chunks = get_chunks(documents, new_files)
