@@ -8,6 +8,4 @@ dependencies:
   - requests
   - PyPDF2
   - streamlit
-  - langchain
   - transformers
-  - sentence_transformers
