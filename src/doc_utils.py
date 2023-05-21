@@ -46,6 +46,10 @@ def process_file(uploaded_file, st):
 
 
 def check_for_files(st):
+    if not os.path.exists('app_database'):
+        os.mkdir('app_database')
+    if not os.path.exists('app_database/db'):
+        os.mkdir('app_database/db')
     if not os.path.exists('app_database/files.txt'):
         with open('app_database/files.txt','w') as f:
             st.write('Created new file - files.txt')
