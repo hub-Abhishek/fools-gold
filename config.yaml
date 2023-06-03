@@ -1,0 +1,5 @@
+secrets_file_loc: secrets.yaml
+folder_prefix: /home/username/Projects/ProjectName
+model_folder: models
+app_database_folder: app_database
+data_folder: data

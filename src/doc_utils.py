@@ -23,9 +23,7 @@ def process_text(file, st, documents):
 
 def process_file(uploaded_file, st):
     
-    st.write('Processing your files...')
-    st.write('Please wait...')
-    st.write('This may take a few minutes...')
+    st.write('Processing your files, please wait. This will take a few mins.')
     
     files = []
     documents = []

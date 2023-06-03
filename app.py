@@ -1,28 +1,27 @@
 import os 
 import streamlit as st
-import json
+from src.utils import get_args, load_config, set_token, get_files
 from src.doc_utils import process_file
 from src.text_preprocessing import get_chunks
 from src.models import Chatbot
 from src.app_utils import generate_sidebar
 
+args = get_args()
+config = load_config(args.config_loc)
+
 st.set_page_config(page_title='DocBot', layout = 'wide', initial_sidebar_state = 'auto')
 
-st.write('Welcome to DocBot!')
-st.write('Here, you can chat with your documents and get answers to your questions.')
-st.write(st.session_state)
-uploaded_file = st.file_uploader(label='Upload your files here!', 
-                                 type=['pdf', 'txt'], 
-                                 accept_multiple_files=True, 
-                                 key='uploaded_file', 
-                                 help='Upload the files you want to chat with. You can drag and drop, or browse through your files by clicking inside the upload box.', )
+st.write('Welcome to DocBot!\n Here, you can chat with your documents and get answers to your questions.')
+
+uploaded_file = get_files(st)
 
 model_repo, embeddings_model_name, model_name, model_kwargs, api_token, run_local = generate_sidebar(st)
+
 st.write(f'Using {model_repo} - {model_name} for retrieval')
 
-os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token
+set_token(config, api_token)
 
-if len(uploaded_file)!=0 and api_token != 'api_token':
+if len(uploaded_file)!=0 and os.environ["HUGGINGFACEHUB_API_TOKEN"]:
     documents, new_files = process_file(uploaded_file, st)
     
     chunks = get_chunks(documents, new_files)
