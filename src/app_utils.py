@@ -1,5 +1,6 @@
 def generate_sidebar(st):
     with st.sidebar:
+        st.sidebar.title("Options")
         model_repo = st.selectbox('Where are your models hosted?',
                                 ('huggingface',), 
                                 key="model_repo", 

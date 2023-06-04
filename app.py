@@ -35,7 +35,7 @@ if len(uploaded_file)!=0 and os.environ["HUGGINGFACEHUB_API_TOKEN"]:
     
     message = 'Ready to chat!'
     print_message(message, st=st)
-    
+
     query = st.text_input('Enter your query here!', value="query", max_chars=500, key="query", type="default", help='Enter your query here!', )
 
     if query is not None:
@@ -49,3 +49,4 @@ if len(uploaded_file)!=0 and os.environ["HUGGINGFACEHUB_API_TOKEN"]:
             f.write(str(result))
             f.write('/n/n')
             f.close()
+        print_message(chatbot.db.get(), st)
