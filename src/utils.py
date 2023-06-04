@@ -34,3 +34,11 @@ def get_files(st):
                                  key='uploaded_file', 
                                  help='Upload the files you want to chat with. You can drag and drop, or browse through your files by clicking inside the upload box.', )
     return uploaded_file
+
+def print_message(message, st=None, logger=None, print_message=True):
+    if st:
+        st.write(message)
+    if logger:
+        logger.info(message)
+    if print_message and not st and not logger:
+        print(message)    

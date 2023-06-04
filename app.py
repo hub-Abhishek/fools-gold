@@ -1,6 +1,6 @@
 import os 
 import streamlit as st
-from src.utils import get_args, load_config, set_token, get_files
+from src.utils import get_args, load_config, set_token, get_files, print_message
 from src.doc_utils import process_file
 from src.text_preprocessing import get_chunks
 from src.models import Chatbot
@@ -11,13 +11,15 @@ config = load_config(args.config_loc)
 
 st.set_page_config(page_title='DocBot', layout = 'wide', initial_sidebar_state = 'auto')
 
-st.write('Welcome to DocBot!\n Here, you can chat with your documents and get answers to your questions.')
+message = 'Welcome to DocBot!\n Here, you can chat with your documents and get answers to your questions.'
+print_message(message, st=st)
 
 uploaded_file = get_files(st)
 
 model_repo, embeddings_model_name, model_name, model_kwargs, api_token, run_local = generate_sidebar(st)
 
-st.write(f'Using {model_repo} - {model_name} for retrieval')
+message = f'Using {model_repo} - {model_name} for retrieval'
+print_message(message, st=st)
 
 set_token(config, api_token)
 
@@ -31,11 +33,17 @@ if len(uploaded_file)!=0 and os.environ["HUGGINGFACEHUB_API_TOKEN"]:
                       st=st, model_kwargs=model_kwargs, new_files=new_files, run_local=run_local)
     qa = chatbot.build_model_and_db()
     
-    st.write('Ready to chat!')
+    message = 'Ready to chat!'
+    print_message(message, st=st)
+    
     query = st.text_input('Enter your query here!', value="query", max_chars=500, key="query", type="default", help='Enter your query here!', )
 
     if query is not None:
+        
+        chatbot.process_query(query)
+            
         result = qa({"query": query})
+
         st.write(result['result'])
         with open('app_database/result.txt', 'a', encoding="utf-8") as f:           
             f.write(str(result))
