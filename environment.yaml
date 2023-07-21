@@ -1,0 +1,11 @@
+name: fools_gold
+dependencies:
+  - python = 3.10.11
+  - numpy
+  - pandas
+  - pytorch
+  - pip
+  - requests
+  - PyPDF2
+  - streamlit
+  - transformers

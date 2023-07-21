@@ -1,0 +1,34 @@
+secrets_file_loc: secrets/secrets.yaml
+
+# local locations
+# folder_prefix: /home/username/Projects/ProjectName
+# local_s3_folder/models_source_dir/model_folder
+# local_s3_folder/models_source_dir/tokenizer_folder
+local_s3_folder: aws_resources
+models_source_dir: models
+model_folder: core_models
+tokenizer_folder: tokenizers
+tar_folder: tar_files
+bot_avatar_folder: img/bot
+your_avatar_folder: img/you
+
+app_database_folder: app_database
+data_folder: data
+
+# s3 locations
+s3_models_source_dir: models
+
+collection_name: my_collection
+
+decode_levels:
+  tokenize_only: tokenize_only
+  complete: complete
+
+# app config
+app_config:
+  model_repo: ['huggingface',]
+  embeddings_model_name: ['google/flan-t5-base',]
+  model_name: ['google/flan-t5-base', ]
+  # model_repo: ['huggingface', 'hf2']
+  # embeddings_model_name: ['google/flan-t5-base', 'google/flan-t5-small', 'hkunlp/instructor-large', 'google/flan-t5-xl', 'google/flan-t5-xxl', 'other']
+  # model_name: ['google/flan-t5-base', 'google/flan-t5-small', 'hkunlp/instructor-large', 'google/flan-t5-xl', 'google/flan-t5-xxl', 'other']
