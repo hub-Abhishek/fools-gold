@@ -25,16 +25,16 @@ def load_config(config_loc):
             print(exc)
 
 def get_secrets(config):
-    if platform.system()=='Windows' and os.name=='nt':
+    # if platform.system()=='Windows' and os.name=='nt':
         
-        with open(config['secrets_file_loc'], "r") as stream:
-            try:
-                secrets = yaml.safe_load(stream)
-                return secrets
-            except yaml.YAMLError as exc:
-                print(exc)
-    else:
-        return None
+    with open(config['secrets_file_loc'], "r") as stream:
+        try:
+            secrets = yaml.safe_load(stream)
+            return secrets
+        except yaml.YAMLError as exc:
+            print(exc)
+    # else:
+    #     return None
 
 def set_token(secrets, api_token=None):
     if secrets:
