@@ -13,6 +13,9 @@ class frontend_manager():
         self.config = config
 
         self.avtar_width = 40
+        
+        self.get_or_create_key_session_state('bot_avtar_pic')
+        self.get_or_create_key_session_state('your_avtar_pic')
 
 
     def generate_sidebar(self):
@@ -62,8 +65,6 @@ class frontend_manager():
             self.st.session_state[name] = None
     
     def other_options(self):
-        self.get_or_create_key_session_state('bot_avtar_pic')
-        self.get_or_create_key_session_state('your_avtar_pic')
 
         bot_avtar, your_avtar = self.st.tabs(["Bot Avatars", "Your Avtars"])
 
