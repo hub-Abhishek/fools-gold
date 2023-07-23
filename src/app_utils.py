@@ -26,22 +26,26 @@ class frontend_manager():
 
             # if "ready" not in self.st.session_state:
             #     self.st.session_state.ready = None
-            message = 'Welcome to DocBot!\n Here, you can chat with your documents and get answers to your questions.'
+            message = 'Welcome to DocBot!\n Chatting is always better than stalking! Chat with your documents to find the answers you need!'
             self.st.sidebar.title(message)
 
             uploaded_file, model_repo, embeddings_model_name, model_name = self.get_options_v2()
             # self.other_options()
+            self.st.markdown("""---""")             
+            
+            file_box = self.st.container()
+            self.list_files(file_box, uploaded_file)
             self.st.markdown("""---""") 
 
-            # if not self.st.session_state.ready:
-            #     del self.st.session_state.ready
-            ready = self.st.button('Build the bot!', key='ready')
-            self.st.markdown("""---""") 
 
-            self.st.button('Reset memory!', on_click=self.clear_messages, use_container_width=True)
+            col1, col2= st.columns(2)
+            with col1:
+                ready = self.st.button('Build the bot!', key='ready')
+            with col2:
+                self.st.button('Reset memory!', key='Reset', on_click=self.reset_bot)
+            self.st.markdown("""---""") 
             # self.st.markdown("""---""") 
-            # self.st.write('About DocBot')
-            # self.st.write(self.st.session_state.ready)
+            
             self.st.write(self.st.session_state)
             
             
@@ -54,6 +58,22 @@ class frontend_manager():
                 'model_kwargs': None,
                 'ready': self.st.session_state.ready
                 }
+    
+    def list_files(self, file_box, uploaded_file):
+            self.checkboxes = []
+            file_box.write('Files found:')
+            for i, file in enumerate(uploaded_file):
+                self.checkboxes.append(file_box.checkbox(file.replace(f"{self.config['uploaded_file_loc']}\\", ''), key=f'flie_{i}'))
+            delete_button_enabled = True if sum(self.checkboxes)==0 else False
+            file_box.button('Delete selected files!', on_click=self.delete_files, args=[uploaded_file], disabled=delete_button_enabled, key='delete_files', help='Delete the selected files!')
+        
+    def delete_files(self, uploaded_file):
+        for i, file in enumerate(self.checkboxes):
+            if file:
+                if os.path.exists(uploaded_file[i]):
+                    os.remove(uploaded_file[i])
+                # self.st.session_state.file_names.remove(uploaded_file[i])
+        
 
     def display_avtar(self, container, location, n_images): 
         cols = container.columns(n_images)
@@ -124,6 +144,7 @@ class frontend_manager():
 
     def get_files(self):
         uploaded_files = []
+        self.st.session_state.file_names = []
         for dir, _, files in os.walk('uploaded_files'):
             for file in files:
                 uploaded_files.append(os.path.join(dir, file))
@@ -180,6 +201,8 @@ class frontend_manager():
         if "query" in self.st.session_state:
             del self.st.session_state["query"]
         
+        self.st.session_state.last_state = 'query'
+        
 
     def handle_queries(self, query, sidebar_data):
         if (len(sidebar_data['uploaded_file'])==0 ) and query:
@@ -190,12 +213,13 @@ class frontend_manager():
             self.process_messages_for_frontend(return_query, "assistant")
 
 
-    def clear_messages(self):
+    def reset_bot(self):
         del self.st.session_state["messages"]
         del self.st.session_state["file_names"]
         self.st.session_state["prompting"] = False
         self.st.session_state["last_state"] = None
         self.prompt_container.empty()
+        self.delete_files()
 
 
 @st.cache_data# (allow_output_mutation = True)
