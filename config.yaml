@@ -11,6 +11,7 @@ tokenizer_folder: tokenizers
 tar_folder: tar_files
 bot_avatar_folder: img/bot
 your_avatar_folder: img/you
+uploaded_file_loc: uploaded_files
 
 app_database_folder: app_database
 data_folder: data

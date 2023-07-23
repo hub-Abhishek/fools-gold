@@ -16,6 +16,8 @@ class frontend_manager():
         
         self.get_or_create_key_session_state('bot_avtar_pic')
         self.get_or_create_key_session_state('your_avtar_pic')
+        self.get_or_create_key_session_state('last_state')
+        self.get_or_create_key_session_state('file_names', [])
 
 
     def generate_sidebar(self):
@@ -28,7 +30,7 @@ class frontend_manager():
             self.st.sidebar.title(message)
 
             uploaded_file, model_repo, embeddings_model_name, model_name = self.get_options_v2()
-            self.other_options()
+            # self.other_options()
             self.st.markdown("""---""") 
 
             # if not self.st.session_state.ready:
@@ -40,7 +42,7 @@ class frontend_manager():
             # self.st.markdown("""---""") 
             # self.st.write('About DocBot')
             # self.st.write(self.st.session_state.ready)
-            # self.st.write(self.st.session_state)
+            self.st.write(self.st.session_state)
             
             
         return {'uploaded_file': uploaded_file,
@@ -57,13 +59,14 @@ class frontend_manager():
         cols = container.columns(n_images)
         for dir, _, files in os.walk(location):
             for i, image in enumerate(files):
-                image_file = Image.open(os.path.join(dir, image))
+                image_file = get_avtar_pic(dir, image)
                 cols[i].image(image_file, use_column_width=True)
 
-    def get_or_create_key_session_state(self, name):
+    def get_or_create_key_session_state(self, name, init_value=None):
         if not name in self.st.session_state:
-            self.st.session_state[name] = None
+            self.st.session_state[name] = init_value
     
+    # @st.cache
     def other_options(self):
 
         bot_avtar, your_avtar = self.st.tabs(["Bot Avatars", "Your Avtars"])
@@ -80,13 +83,14 @@ class frontend_manager():
         doc_info = ''
 
         with step_1:
+            self.upload_files()
             uploaded_file = self.get_files()
-            if len(uploaded_file) > 0:
-                if len(uploaded_file) == 1:
-                    doc_info = [file.name for file in uploaded_file]
-                    doc_info = ', '.join(doc_info)
-                elif len(uploaded_file) > 2:
-                    doc_info = f"{uploaded_file[0].name} and {len(uploaded_file)-1} other files"
+            # if len(uploaded_file) > 0:
+            #     if len(uploaded_file) == 1:
+            #         doc_info = [file.name for file in uploaded_file]
+            #         doc_info = ', '.join(doc_info)
+            #     elif len(uploaded_file) > 2:
+            #         doc_info = f"{uploaded_file[0].name} and {len(uploaded_file)-1} other files"
 
         with step_2:
             model_repo, embeddings_model_name, model_name = self.get_model_info()
@@ -97,13 +101,35 @@ class frontend_manager():
 
         return uploaded_file, model_repo, embeddings_model_name, model_name
 
-    def get_files(self):
-        uploaded_file = self.st.file_uploader(label='Upload your files here!', 
+    def upload_files(self):
+        upload_files = False
+        if self.st.session_state.last_state != 'uploading':
+            upload_files = self.st.button('Upload files?', )
+
+        if upload_files or self.st.session_state.last_state == 'uploading':
+            self.st.session_state.last_state = 'uploading'
+            uploaded_file = self.st.file_uploader(label='Upload your files here!', 
                                     type=['pdf', 'txt', 'csv'], 
                                     accept_multiple_files=True, 
                                     key='uploaded_file', 
                                     help='Upload the files you want to chat with. You can drag and drop, or browse through your files by clicking inside the upload box.', )
-        return uploaded_file
+            
+            for file in uploaded_file:
+                if not os.path.exists(os.path.join(self.config['uploaded_file_loc'], file.name)):
+                    with open(os.path.join(self.config['uploaded_file_loc'], file.name),"wb") as f: 
+                        f.write(file.getbuffer())  
+                os.walk(self.config['uploaded_file_loc'])
+            
+            # del st.session_state['uploaded_file']
+
+    def get_files(self):
+        uploaded_files = []
+        for dir, _, files in os.walk('uploaded_files'):
+            for file in files:
+                uploaded_files.append(os.path.join(dir, file))
+                if file not in self.st.session_state.file_names:
+                    self.st.session_state.file_names.append(file)
+        return uploaded_files
 
 
     def get_model_info(self):
@@ -166,4 +192,13 @@ class frontend_manager():
 
     def clear_messages(self):
         del self.st.session_state["messages"]
+        del self.st.session_state["file_names"]
+        self.st.session_state["prompting"] = False
+        self.st.session_state["last_state"] = None
         self.prompt_container.empty()
+
+
+@st.cache_data# (allow_output_mutation = True)
+def get_avtar_pic(dir, image):
+    image_file = Image.open(os.path.join(dir, image))
+    return image_file

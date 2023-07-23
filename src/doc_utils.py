@@ -12,7 +12,7 @@ def process_pdf(file, documents):
     
     for i, page in enumerate(pdfReader.pages):
         documents.append(Document(page_content=page.extract_text(),
-                                metadata={'title': file.name, 
+                                metadata={'title': file, 
                                             'page_number': i}))
     return documents
 
@@ -21,7 +21,7 @@ def process_text(file, documents):
     for line in file:
         text +=  str(line.decode())
     documents.append(Document(page_content=text,
-                            metadata={'title': file.name,}))
+                            metadata={'title': file}))
     return documents
 
 def process_csv(file, documents):
@@ -47,14 +47,14 @@ def process_file(uploaded_file):
     documents = []
     for file in uploaded_file:
         
-        files.append(file.name)
+        # files.append(file.name)
         # message = f'Processing document - {file.name} which is a {file.type} file. Please wait...'
         # print_message(message, st=st)
         
-        if file.type=='application/pdf': 
+        if file[-4:]=='.pdf': 
             documents = process_pdf(file, documents)
         
-        if file.type=='text/plain':
+        if file[-4:]=='.txt':
             documents = process_text(file, documents)
         
         # if file.type=='text/csv':

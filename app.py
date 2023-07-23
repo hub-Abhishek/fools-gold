@@ -1,3 +1,4 @@
+# Milton's Opus
 import os 
 import streamlit as st
 from src.utils import get_args, load_config, set_token, print_message, get_logger, get_secrets
@@ -33,7 +34,7 @@ if __name__ == '__main__':
 
     if ((len(sidebar_data['uploaded_file'])!=0 )
         # and os.environ["HUGGINGFACEHUB_API_TOKEN"] 
-        and (st.session_state.ready or st.session_state.prompting)
+        # and (st.session_state.ready or st.session_state.prompting)
         # and query is not None
         ):
         
@@ -44,19 +45,18 @@ if __name__ == '__main__':
 
         chatbot = bot(secrets=secrets, config=config, bot_config=sidebar_data, local=False)
         chatbot.initialize()
-
         
         query = prompt_container.chat_input(placeholder="Memento mori!", disabled=False)  
 
         if query:  
             frontend.write_new_query(query, "user")
+            answer = chatbot.process_and_predict(query)
+            frontend.write_new_query(answer, "assistant")
         # message = 'Ready to chat!'
         # print_message(message, st=assistant)
         # query = prompt_container.text_input('Enter your query here!', value="query", max_chars=500, key="query", type="default", help='Enter your query here!', )
 
-        if query is not None:
-            answer = chatbot.process_and_predict(query)
-            frontend.write_new_query(answer, "assistant")
+        # if query:
         #     chatbot.process_query(query)
                 
         #     result = qa({"query": query})
