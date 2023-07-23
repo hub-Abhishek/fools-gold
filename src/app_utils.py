@@ -197,11 +197,11 @@ class frontend_manager():
 
         if add_to_queue and content:
             self.st.session_state.messages.append({"role": role, "content": content})
+            self.st.session_state.last_state = 'query'
 
         if "query" in self.st.session_state:
             del self.st.session_state["query"]
         
-        self.st.session_state.last_state = 'query'
         
 
     def handle_queries(self, query, sidebar_data):
