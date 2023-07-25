@@ -21,7 +21,7 @@ class embeddings_function(EmbeddingFunction):
 
     def call_url(self, texts: Documents):
         url = 'https://neo63xnfpd.execute-api.us-east-1.amazonaws.com/dev/bot-api' # f"{secrets['model']['url']}"
-        return requests.post(data=json.dumps({'data': texts, 'decode_level': 'embed', 'source': 'api'}), url=url).json()
+        return requests.post(data=json.dumps({'data': texts, 'decode_level': 'embed'}), url=url).json()
         ...
     def embed_documents(self, texts: List) -> Embeddings:
         # url = f"{secrets['model']['url']}"
@@ -32,6 +32,7 @@ class embeddings_function(EmbeddingFunction):
             all_returned_json = []
             for i in tqdm(range(0, len(texts), 5)):
                 returned_json = self.call_url(texts[i:i+5])
+                print(returned_json)
                 all_returned_json += eval(returned_json)
             return all_returned_json
         
@@ -43,13 +44,13 @@ class embeddings_function(EmbeddingFunction):
 
 
 from typing import Any, List, Mapping, Optional
-from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.llms.base import LLM
 import requests, json
 
-class CustomLLM(LLM):
+class CustomLLM:
     # n: int
-    url: str
+    def __init__(self, url) -> None:
+        
+        self.url = url
 
     @property
     def _llm_type(self) -> str:
@@ -58,13 +59,15 @@ class CustomLLM(LLM):
     def _call(
         self,
         prompt: str,
-        stop: Optional[List[str]] = None,
-        run_manager: Optional[CallbackManagerForLLMRun] = None,
+        documents: Optional[Documents] = None,
+        decode_level: str = "generate",
+        # stop: Optional[List[str]] = None,
+        # run_manager: Optional[CallbackManagerForLLMRun] = None,
     ) -> str:
-        if stop is not None:
-            raise ValueError("stop kwargs are not permitted.")
+        # if stop is not None:
+        #     raise ValueError("stop kwargs are not permitted.")
         url = self.url # f"{secrets['model']['url']}"
-        returned_json = requests.post(data=json.dumps({'data': [prompt], 'decode_level': 'generate', 'source': 'api'}), url=url).json()
+        returned_json = requests.post(data=json.dumps({'data': prompt, 'documents': documents, 'decode_level': decode_level}), url=url).json()
         return eval(returned_json)
 
     @property

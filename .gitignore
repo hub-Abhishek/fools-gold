@@ -8,6 +8,6 @@ secrets/*
 frontend/*
 notebooks/*
 dlai/*
-aws_resources/models/*
+aws_resources/**/models/*
 tar_files/*
 uploaded_files/*

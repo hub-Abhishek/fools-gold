@@ -12,6 +12,7 @@ tar_folder: tar_files
 bot_avatar_folder: img/bot
 your_avatar_folder: img/you
 uploaded_file_loc: uploaded_files
+db_csv_folder: uploaded_files_csv/db.csv
 
 app_database_folder: app_database
 data_folder: data
@@ -19,7 +20,7 @@ data_folder: data
 # s3 locations
 s3_models_source_dir: models
 
-collection_name: my_collection
+collection_name: my_test_collection
 
 decode_levels:
   tokenize_only: tokenize_only

@@ -9,6 +9,9 @@ TODO list:
 - [ ] Error page for URL
 - [ ] Better models
 - [ ] Upload files button to top
+- [ ] Chromadb api
+- [ ] Shift chromadb installation entirely to other instance
+- [ ] DB for UUID mapping
 
 Completed:
 
