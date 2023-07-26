@@ -56,7 +56,8 @@ class frontend_manager():
                 'api_token': None, 
                 'run_local': None, 
                 'model_kwargs': None,
-                'ready': self.st.session_state.ready
+                'ready': self.st.session_state.ready,
+                'replicate_api_token': self.st.session_state.replicate_api_token,
                 }
     
     def list_files(self, file_box, uploaded_file):
@@ -98,9 +99,15 @@ class frontend_manager():
             self.display_avtar(your_avtar, self.config["your_avatar_folder"], 3)
 
     def get_options_v2(self):
-        step_1, step_2, Info = self.st.tabs(["Step 1", "Step 2", "Status"])
+        step_0, step_1, step_2, Info = self.st.tabs(["Step 0", "Step 1", "Step 2", "Status"])
         uploaded_file = []
         doc_info = ''
+
+        with step_0:            
+            st.text_input('Enter your Replicate API TOKEN', value="", key="replicate_api_token", type="default", help='Enter your API token here!',)
+            if self.st.session_state.replicate_api_token is None:
+                st.write('Confused? You can get your replicate API token from here: https://replicate.ai/')
+
 
         with step_1:
             self.upload_files()
@@ -183,14 +190,16 @@ class frontend_manager():
             self.st.session_state.messages = []
         
         for message in self.st.session_state.messages:
-            avtar = self.st.session_state.your_avtar_pic \
-                if message["role"] == "user" else self.st.session_state.bot_avtar_pic
+            # avtar = self.st.session_state.your_avtar_pic \
+            #     if message["role"] == "user" else self.st.session_state.bot_avtar_pic
+            avtar = None
             self.st.chat_message(message["role"], avatar=avtar).write(message["content"])
 
     def write_new_query(self, content, role, add_to_queue=True):
         
-        avtar = self.st.session_state.your_avtar_pic \
-            if role == "user" else self.st.session_state.bot_avtar_pic
+        # avtar = self.st.session_state.your_avtar_pic \
+        #     if role == "user" else self.st.session_state.bot_avtar_pic
+        avtar = None
         
         if content:
             self.st.chat_message(role, avatar=avtar).write(content)

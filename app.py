@@ -29,7 +29,7 @@ if __name__ == '__main__':
     frontend.process_messages_for_frontend()
     frontend.write_new_query(query, "user")
 
-    set_token(secrets, sidebar_data['api_token'])
+    set_token(secrets, sidebar_data['api_token'], sidebar_data['replicate_api_token'])
     st.session_state['prompting'] = False if 'prompting' not in st.session_state else st.session_state['prompting']
 
     if ((len(sidebar_data['uploaded_file'])!=0 )
