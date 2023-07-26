@@ -13,6 +13,9 @@ bot_avatar_folder: img/bot
 your_avatar_folder: img/you
 uploaded_file_loc: uploaded_files
 db_csv_folder: uploaded_files_csv/db.csv
+model_replicate: 'lucataco/llama-2-7b-chat:6ab580ab4eef2c2b440f2441ec0fc0ace5470edaf2cbea50b8550aec0b3fbd38'
+
+EOL: </s>
 
 app_database_folder: app_database
 data_folder: data

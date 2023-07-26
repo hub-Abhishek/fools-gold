@@ -9,4 +9,4 @@ dependencies:
   - streamlit = 1.24.1
   - tqdm
   - ctransformers = 0.2.14
-  
+  - replicate = 0.9.0

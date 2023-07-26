@@ -9,7 +9,7 @@ import torch
 import numpy as np
 import sentence_transformers
 from sentence_transformers.cross_encoder import CrossEncoder
-from ctransformers import AutoModelForCausalLM
+# from ctransformers import AutoModelForCausalLM
 
 preprompt = "Below are a series of dialogues between various people and an AI assistant. The AI tries to be helpful, polite, honest, sophisticated, emotionally aware, and humble-but-knowledgeable. The assistant is happy to help with almost anything, and will do its best to understand exactly what is needed. It also tries to avoid giving false or misleading information, and it caveats when it isn't entirely sure about the right answer. That said, the assistant is practical and really does its best, and doesn't let caution get too much in the way of being useful.\n"
 
@@ -55,23 +55,26 @@ def model_fn(model_dir):
     cross_encoder = CrossEncoder("models/core_models/cross-encoder/ms-marco-MiniLM-L-6-v2")
     # cross_encoder.to(device).eval()
 
-    values = {
-    'model': 'models/core_models/llama2/llama-2-7b-chat.ggmlv3.q8_0.bin',
-    'model_type': 'llama',
-    'model_file': None,
-    'config': {'max_new_tokens': 256, 'temperature': 0.01}
-    }
+    # values = {
+    # 'model': 'models/core_models/llama2/llama-2-7b-chat.ggmlv3.q8_0.bin',
+    # 'model_type': 'llama',
+    # 'model_file': None,
+    # 'config': {'max_new_tokens': 256, 'temperature': 0.01}
+    # }
     
-    llm = AutoModelForCausalLM.from_pretrained(
-        values["model"],
-        model_type=values["model_type"],
-        model_file=values["model_file"],
-        # lib=values["lib"],
-        **values['config'],
-        )
+    # llm = AutoModelForCausalLM.from_pretrained(
+    #     values["model"],
+    #     model_type=values["model_type"],
+    #     model_file=values["model_file"],
+    #     # lib=values["lib"],
+    #     **values['config'],
+    #     )
     # llm.to(device).eval()
     logger.info(f'{name} - Done loading model')
-    return {'tokenizer': tokenizer, 'cross_encoder': cross_encoder, 'llm': llm}
+    return {'tokenizer': tokenizer, 
+            'cross_encoder': cross_encoder, 
+            # 'llm': llm
+            }
 
 
 def input_fn(input_data, content_type, context):
@@ -120,40 +123,40 @@ def predict_fn(input_data, model):
         logger.info(type(encoded))
         return encoded
     
-    elif input_data["decode_level"]=='generate':
-        cross_encoder = model['cross_encoder']
-        llm = model['llm']
-        del model
+    # elif input_data["decode_level"]=='generate':
+    #     cross_encoder = model['cross_encoder']
+    #     llm = model['llm']
+    #     del model
 
-        query = input_data["data"]
-        logger.info(f'{name} - query - {query}')
+    #     query = input_data["data"]
+    #     logger.info(f'{name} - query - {query}')
 
-        documents = input_data["documents"]
-        logger.info(f'{name} - documents - {documents}')
+    #     documents = input_data["documents"]
+    #     logger.info(f'{name} - documents - {documents}')
 
-        data_limit = input_data.get('data_limit', 5)
-        logger.info(f'{name} - documents - {documents}')
+    #     data_limit = input_data.get('data_limit', 5)
+    #     logger.info(f'{name} - documents - {documents}')
 
-        doc_pairs = [[query[0], document] for document in documents]
-        logger.info(f'{name} - doc_pairs - {doc_pairs}')
+    #     doc_pairs = [[query[0], document] for document in documents]
+    #     logger.info(f'{name} - doc_pairs - {doc_pairs}')
 
-        scores = cross_encoder.predict(doc_pairs)
-        logger.info(f'{name} - scores - {scores}')
+    #     scores = cross_encoder.predict(doc_pairs)
+    #     logger.info(f'{name} - scores - {scores}')
         
         
-        sorted_idx = np.argsort(scores)[::-1]
-        logger.info(f'{name} - sorted_idx - {sorted_idx}')
+    #     sorted_idx = np.argsort(scores)[::-1]
+    #     logger.info(f'{name} - sorted_idx - {sorted_idx}')
        
-        results = []
-        for idx in sorted_idx[:data_limit]:
-            results.append(documents[idx])
-        results = ' '.join(results)
-        logger.info(f'{name} - results - {results}')
+    #     results = []
+    #     for idx in sorted_idx[:data_limit]:
+    #         results.append(documents[idx])
+    #     results = ' '.join(results)
+    #     logger.info(f'{name} - results - {results}')
 
-        final_prompt = prompt_temp.format(context = results, question = query)
-        logger.info(f'{name} - final_prompt - {final_prompt}')
+    #     final_prompt = prompt_temp.format(context = results, question = query[0])
+    #     logger.info(f'{name} - final_prompt - {final_prompt}')
 
-        response = llm(final_prompt)
-        logger.info(f'{name} - response - {response}')
+    #     response = llm(final_prompt)
+    #     logger.info(f'{name} - response - {response}')
 
-        return response
+    #     return response

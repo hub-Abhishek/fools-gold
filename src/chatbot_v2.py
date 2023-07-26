@@ -3,36 +3,23 @@ import uuid
 import chromadb
 import requests, json
 import pandas as pd
+import replicate
 
 from abc import ABC, abstractmethod
 from chromadb.config import Settings
-from src.bot_utils_v2 import embeddings_function, CustomLLM
-from src.doc_utils import process_file
-
-# import langchain
-# from langchain.cache import InMemoryCache
-# from langchain.vectorstores import Chroma
-# from langchain.embeddings import HuggingFaceInstructEmbeddings
-# from langchain import HuggingFaceHub
-# from langchain.chains import RetrievalQA, ConversationalRetrievalChain
-# from langchain.memory import ConversationBufferMemory
-# from langchain.docstore.document import Document
-
-# from src.utils import print_message, get_aws_info, get_logger
-# from src.text_preprocessing import get_chunks    
-# from src.resource_manager import Embeddings, Models
+from src.bot_utils_v2 import embeddings_function# , CustomLLM
+from src.doc_utils import process_file_get_chunks
+from src.constants import prompt_temp, qa_template, system_message
 
 class bot():
-    def __init__(self, config, secrets, bot_config, local=False) -> None:
+    def __init__(self, config, secrets, bot_config, local=False, logger=None) -> None:
         self.config = config
         self.secrets = secrets
         self.bot_config = bot_config
         self.local = local
+        self.logger = logger
 
         self.embedding_function = None
-        # self.memory = None
-        # self.retriever = None
-        # self.qa = None
 
         self.query_id = None
         self.save_chat_temporarily_to_db = False
@@ -41,7 +28,7 @@ class bot():
         self.get_mappings_db()
         self.get_embedding_func()
         self.get_db()
-        self.get_model()
+        # self.get_model()
         
     def get_embedding_func(self):
         self.embeddings_function = embeddings_function()
@@ -74,18 +61,25 @@ class bot():
                 documents=documents)
         return ids
     
-    def get_model(self):
+    # def get_model(self):
         # from src.bot_utils import CustomLLM
-        self.chat_model = CustomLLM(url=f"{self.secrets['model']['url']}")
+        # self.chat_model = CustomLLM(url=f"{self.secrets['model']['url']}")
+
+    def chat(self, query, documents):
+        self.logger.info("waiting for response from llm")
+        documents = '\n'.join(list(set(documents)))
+        message = qa_template.format(question=query, context=documents)
+        response = replicate.run(self.config['model_replicate'],
+                                 input = {
+                                     "prompt": message,
+                                     "system_prompt": system_message,
+                                     "max_new_tokens": 500,
+                                     "temperature:": 0.1,
+
+                                     })
+        return response
     
     def process_and_predict(self, query):
-        # if self.qa is None:
-        #     self.get_qa()
-        # if self.save_chat_temporarily_to_db:
-        #     pass
-        # else:
-        #     self.response = self.qa({"question": query})
-        #     print(self.response)
         
         # 1. get embeddings of query
         # 2. match embeddings with db
@@ -94,18 +88,18 @@ class bot():
         
         query_embeddings = self.embeddings_function.embed_query(query)
         response = self.collection.query(query_embeddings, )
-        response = self.chat_model(prompt=query, documents=response['documents'][0])
-        print(response)
+        response = self.chat(query=query, documents=response['documents'][0]).replace(self.config['EOL'], '')
+        self.logger.info(response)
                 # ids = self.embed_documents_into_db(chunks)
                 # self.add_ids_to_db(ids, file)
-        return response['answer']
+        return response
         
         
     def process_file(self, uploaded_file):
         for file in uploaded_file:
             existing_info = self.collection.get(where={'file_name': file})
             if len(existing_info['ids']) == 0:
-                chunks = process_file(file)
+                chunks = process_file_get_chunks(file)
                 ids = self.embed_documents_into_db(chunks)
                 self.add_ids_to_db(ids, file)
 

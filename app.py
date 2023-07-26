@@ -2,8 +2,8 @@
 import os 
 import streamlit as st
 from src.utils import get_args, load_config, set_token, print_message, get_logger, get_secrets
-from src.doc_utils import process_file
-from src.text_preprocessing import get_chunks
+# from src.doc_utils import process_file
+# from src.text_preprocessing import get_chunks
 from src.chatbot_v2 import bot
 from src.app_utils import frontend_manager
 
@@ -40,14 +40,10 @@ if __name__ == '__main__':
         
         st.session_state['prompting'] = True
 
-        chatbot = bot(secrets=secrets, config=config, bot_config=sidebar_data, local=False)
+        chatbot = bot(secrets=secrets, config=config, bot_config=sidebar_data, local=False, logger=logger)
         chatbot.initialize()
         
-        documents, _ = chatbot.process_file(sidebar_data['uploaded_file'])
-        
-        chunks = get_chunks(documents)
-
-
+        chatbot.process_file(sidebar_data['uploaded_file'])
         
         query = prompt_container.chat_input(placeholder="Memento mori!", disabled=False)  
 
@@ -55,18 +51,3 @@ if __name__ == '__main__':
             frontend.write_new_query(query, "user")
             answer = chatbot.process_and_predict(query)
             frontend.write_new_query(answer, "assistant")
-        # message = 'Ready to chat!'
-        # print_message(message, st=assistant)
-        # query = prompt_container.text_input('Enter your query here!', value="query", max_chars=500, key="query", type="default", help='Enter your query here!', )
-
-        # if query:
-        #     chatbot.process_query(query)
-                
-        #     result = qa({"query": query})
-
-            # st.write(result['result'])
-        #     with open('app_database/result.txt', 'a', encoding="utf-8") as f:           
-        #         f.write(str(result))
-        #         f.write('/n/n')
-        #         f.close()
-        #     print_message(chatbot.db.get(), st)

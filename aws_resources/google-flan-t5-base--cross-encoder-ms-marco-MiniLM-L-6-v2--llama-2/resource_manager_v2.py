@@ -148,6 +148,7 @@ if __name__=="__main__":
     logger.info(f"tar file uploaded to {config['s3_models_source_dir']}/{model_save_name}/model.tar.gz")
 
     from sagemaker.pytorch import PyTorchModel
+    logger.info(f'Model location - s3://{secrets["s3_bucket"]}/{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz')
     pytorch_model = PyTorchModel(model_data=f's3://{secrets["s3_bucket"]}/{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz', 
                              role=secrets['role_name'], 
                             #  source_dir='aws_resources/model_resources',
@@ -158,7 +159,12 @@ if __name__=="__main__":
                             #  endpoint_name=f'{model_save_name}'
                              )
     
-    predictor = pytorch_model.deploy(instance_type='ml.m5.2xlarge', initial_instance_count=1, endpoint_name=f'{model_save_name}'[-63:])
+    predictor = pytorch_model.deploy(
+        instance_type='ml.m5.2xlarge', 
+        # instance_type='ml.c6gn.2xlarge', 
+        # instance_type='ml.c6gn.2xlarge',
+        initial_instance_count=1, 
+        endpoint_name=f'{model_save_name}'[-63:])
     # import pdb; pdb.set_trace()
     # print_message(response, logger=logger)
 

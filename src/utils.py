@@ -39,6 +39,7 @@ def get_secrets(config):
 def set_token(secrets, api_token=None):
     if secrets:
         os.environ["HUGGINGFACEHUB_API_TOKEN"] = secrets['HUGGINGFACEHUB_API_TOKEN']
+        os.environ["REPLICATE_API_TOKEN"] = secrets['REPLICATE_API_TOKEN']
     else:
         os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token
 

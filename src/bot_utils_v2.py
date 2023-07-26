@@ -1,3 +1,4 @@
+import requests, json
 from chromadb.api.types import EmbeddingFunction
 from typing import Any, Optional, Union, Dict, Sequence, TypeVar, List
 from tqdm import tqdm
@@ -43,35 +44,35 @@ class embeddings_function(EmbeddingFunction):
     
 
 
-from typing import Any, List, Mapping, Optional
-import requests, json
+# from typing import Any, List, Mapping, Optional
+# import requests, json
 
-class CustomLLM:
-    # n: int
-    def __init__(self, url) -> None:
+# class CustomLLM:
+#     # n: int
+#     def __init__(self, url) -> None:
         
-        self.url = url
+#         self.url = url
 
-    @property
-    def _llm_type(self) -> str:
-        return "custom"
+#     @property
+#     def _llm_type(self) -> str:
+#         return "custom"
 
-    def _call(
-        self,
-        prompt: str,
-        documents: Optional[Documents] = None,
-        decode_level: str = "generate",
-        # stop: Optional[List[str]] = None,
-        # run_manager: Optional[CallbackManagerForLLMRun] = None,
-    ) -> str:
-        # if stop is not None:
-        #     raise ValueError("stop kwargs are not permitted.")
-        url = self.url # f"{secrets['model']['url']}"
-        returned_json = requests.post(data=json.dumps({'data': prompt, 'documents': documents, 'decode_level': decode_level}), url=url).json()
-        return eval(returned_json)
+#     def _call(
+#         self,
+#         prompt: str,
+#         documents: Optional[Documents] = None,
+#         decode_level: str = "generate",
+#         # stop: Optional[List[str]] = None,
+#         # run_manager: Optional[CallbackManagerForLLMRun] = None,
+#     ) -> str:
+#         # if stop is not None:
+#         #     raise ValueError("stop kwargs are not permitted.")
+#         url = self.url # f"{secrets['model']['url']}"
+#         returned_json = requests.post(data=json.dumps({'data': prompt, 'documents': documents, 'decode_level': decode_level}), url=url).json()
+#         return eval(returned_json)
 
-    @property
-    def _identifying_params(self) -> Mapping[str, Any]:
-        """Get the identifying parameters."""
-        # return {"n": self.n}
-        return {}
+#     @property
+#     def _identifying_params(self) -> Mapping[str, Any]:
+#         """Get the identifying parameters."""
+#         # return {"n": self.n}
+#         return {}

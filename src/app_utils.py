@@ -46,7 +46,7 @@ class frontend_manager():
             self.st.markdown("""---""") 
             # self.st.markdown("""---""") 
             
-            self.st.write(self.st.session_state)
+            # self.st.write(self.st.session_state)
             
             
         return {'uploaded_file': uploaded_file,

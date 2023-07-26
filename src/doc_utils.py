@@ -62,7 +62,7 @@ def get_chunks(documents):
     return chunks
 
 
-def process_file(uploaded_file):
+def process_file_get_chunks(uploaded_file):
     """
     1. Check for new files
     2. Fow new files - 
