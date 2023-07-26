@@ -20,7 +20,7 @@ if __name__ == '__main__':
     
     frontend = frontend_manager(st, logger, app_config=config['app_config'], prompt_container=prompt_container, config=config)
 
-    initial_content = "Hello 👋! Please input a file to start chatting!"
+    initial_content = "Hello 👋! Please open the sidebar and follow the instructions to start chatting! Your first query might take a minute, please bear with us while we fix this issue."
     frontend.write_new_query(initial_content, "assistant", add_to_queue=False)
 
     sidebar_data = frontend.generate_sidebar()
@@ -28,11 +28,12 @@ if __name__ == '__main__':
     
     frontend.process_messages_for_frontend()
     frontend.write_new_query(query, "user")
-
+    
     set_token(secrets, sidebar_data['api_token'], sidebar_data['replicate_api_token'])
     st.session_state['prompting'] = False if 'prompting' not in st.session_state else st.session_state['prompting']
 
     if ((len(sidebar_data['uploaded_file'])!=0 )
+        and os.environ["REPLICATE_API_TOKEN"]!=''
         # and os.environ["HUGGINGFACEHUB_API_TOKEN"] 
         # and (st.session_state.ready or st.session_state.prompting)
         # and query is not None

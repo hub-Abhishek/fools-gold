@@ -99,7 +99,7 @@ class frontend_manager():
             self.display_avtar(your_avtar, self.config["your_avatar_folder"], 3)
 
     def get_options_v2(self):
-        step_0, step_1, step_2, Info = self.st.tabs(["Step 0", "Step 1", "Step 2", "Status"])
+        step_0, step_1, step_2, Info = self.st.tabs(["Step 0", "Step 1", "Model Info", "Info"])
         uploaded_file = []
         doc_info = ''
 
@@ -123,8 +123,9 @@ class frontend_manager():
             model_repo, embeddings_model_name, model_name = self.get_model_info()
 
         with Info:
-            self.st.write('Status')
-            self.st.write(f"Using {model_repo} - {embeddings_model_name} for embeddings and {model_name} for retrieval")# on documents - {doc_info}")
+            self.st.write('Info')
+            # self.st.write(f"Using {model_repo} - {embeddings_model_name} for embeddings and {model_name} for retrieval")# on documents - {doc_info}")
+            self.st.write(f'Using custom models hosted on replicate and aws for predictions. Your documents are stored in a local EC2 instance. If you want to delete them after the session, please remove the files from the sidebar.')
 
         return uploaded_file, model_repo, embeddings_model_name, model_name
 
@@ -161,20 +162,28 @@ class frontend_manager():
 
 
     def get_model_info(self):
-        model_repo = self.st.selectbox('Where are your models hosted?',
-                                (self.app_config['model_repo']), 
-                                key="model_repo", 
-                                help='Enter your model provider here!')
         
-        embeddings_model_name = self.st.selectbox('Which embeddings model do you want to try out?',
-                                self.app_config['embeddings_model_name'], 
-                                key="embeddings_model_name", 
-                                help='Enter your embeddings model name here!')
+        st.write('Currently using the default models for predictions.')
+        st.write('Model Repo: Replicate')
+        st.write('Model Used: llama_2 13 B')
+
+        model_repo = 'replicate'
+        embeddings_model_name = None
+        model_name = None
+        # model_repo = self.st.selectbox('Where are your models hosted?',
+        #                         (self.app_config['model_repo']), 
+        #                         key="model_repo", 
+        #                         help='Enter your model provider here!')
         
-        model_name = self.st.selectbox('Which model do you want to try out?',
-                                self.app_config['model_name'], 
-                                key="model_name", 
-                                help='Enter your model name here!')
+        # embeddings_model_name = self.st.selectbox('Which embeddings model do you want to try out?',
+        #                         self.app_config['embeddings_model_name'], 
+        #                         key="embeddings_model_name", 
+        #                         help='Enter your embeddings model name here!')
+        
+        # model_name = self.st.selectbox('Which model do you want to try out?',
+        #                         self.app_config['model_name'], 
+        #                         key="model_name", 
+        #                         help='Enter your model name here!')
 
         # api_token = st.text_input('API TOKEN', value="api_token", max_chars=500, key="api_token", type="default", help='Enter your API token here!',)
         
