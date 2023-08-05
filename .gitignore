@@ -10,5 +10,6 @@ notebooks/*
 dlai/*
 aws_resources/**/models/*
 tar_files/*
+uploaded_files_csv/*
 uploaded_files/*
-uploaded_files_csv/db.csv
+chroma/*

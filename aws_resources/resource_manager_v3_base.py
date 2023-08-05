@@ -63,37 +63,18 @@ class Models(Resources):
                 return True
         return False    
 
+    
+def get_tokenizer(tokenizer_name, config, secrets=None):
+    from transformers import AutoTokenizer
+    tokenizer = AutoTokenizer.from_pretrained(tokenizer_name)
+    return tokenizer
+
 def get_model(model_name, config, secrets=None):
     # from transformers import AutoModelForSeq2SeqLM
     # model = AutoModelForSeq2SeqLM.from_pretrained(model_name)
-    if model_name=="google/flan-t5-base":
-        import sentence_transformers
-        model = sentence_transformers.SentenceTransformer(model_name_or_path=model_name)
-    elif model_name=='llama_2':
-        from ctransformers import AutoModelForCausalLM
-        
-        values = {
-            'model': 'aws_resources/models/core_models/llama2/llama-2-7b-chat.ggmlv3.q8_0.bin',
-            'model_type': 'llama',
-            'model_file': None,
-            'config': {'max_new_tokens': 256, 'temperature': 0.01}
-            }
-
-        model = AutoModelForCausalLM.from_pretrained(
-            values["model"],
-            model_type=values["model_type"],
-            model_file=values["model_file"],
-            # lib=values["lib"],
-            **values['config'],
-        )
-
+    import sentence_transformers
+    model = sentence_transformers.SentenceTransformer(model_name_or_path="google/flan-t5-base")
     return model
-
-def get_cross_encoder_model(cross_encoder_name, config, secrets=None):
-    from sentence_transformers.cross_encoder import CrossEncoder
-    model = CrossEncoder(cross_encoder_name)
-    return model
-
 
 def get_model_name(names, config=None, secrets=None):
     model_name = ''
@@ -127,28 +108,23 @@ if __name__=="__main__":
     models_source_dir = config['models_source_dir'] # 'models'
 
     pretrained_loc = f'{local_s3_folder}/{models_source_dir}' # 'aws_resources/models'
-    
-    tokenizer = get_model(tokenizer_name, config)
-    tokenizer.save(f'{pretrained_loc}/{model_folder}/{tokenizer_name}/')
-    logger.info(f"tokenizer saved to {pretrained_loc}/{model_folder}/{tokenizer_name}/")
 
 
-    cross_encoder = get_cross_encoder_model(cross_encoder_name, config)
-    cross_encoder.save_pretrained(f'{pretrained_loc}/{model_folder}/{cross_encoder_name}/')
-    logger.info(f"cross_encoder saved to {pretrained_loc}/{model_folder}/{cross_encoder_name}/")
+    # tokenizer = get_tokenizer(tokenizer_name, config)
+    # model = get_model(model_name, config)
 
-    # # llama 2 already saved manually
+    # model.save(f'{pretrained_loc}/{model_folder}/{model_name}/')
+    # logger.info(f"model saved to {pretrained_loc}/{model_folder}/{model_name}/")
 
-    local_location = f'{tar_file_source_folder}/{model_save_name}/model.tar.gz' # 'tar_files/google-flan-t5-base--google-flan-t5-base/model.tar.gz'
+    # local_location = f'{tar_file_source_folder}/{model_save_name}/model.tar.gz' # 'tar_files/google-flan-t5-base--google-flan-t5-base/model.tar.gz'
 
-    make_tarfile(local_location, f'{local_s3_folder}/', logger=logger)
-    logger.info(f"tar file saved to {local_location}")
+    # make_tarfile(local_location, f'{local_s3_folder}/', logger=logger)
+    # logger.info(f"tar file saved to {local_location}")
 
-    response = aws_info['s3_client'].upload_file(local_location, secrets['s3_bucket'], f'{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz')
-    logger.info(f"tar file uploaded to {config['s3_models_source_dir']}/{model_save_name}/model.tar.gz")
+    # response = aws_info['s3_client'].upload_file(local_location, secrets['s3_bucket'], f'{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz')
+    # logger.info(f"tar file uploaded to {config['s3_models_source_dir']}/{model_save_name}/model.tar.gz")
 
     from sagemaker.pytorch import PyTorchModel
-    logger.info(f'Model location - s3://{secrets["s3_bucket"]}/{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz')
     pytorch_model = PyTorchModel(model_data=f's3://{secrets["s3_bucket"]}/{config["s3_models_source_dir"]}/{model_save_name}/model.tar.gz', 
                              role=secrets['role_name'], 
                             #  source_dir='aws_resources/model_resources',
@@ -159,13 +135,16 @@ if __name__=="__main__":
                             #  endpoint_name=f'{model_save_name}'
                              )
     
-    predictor = pytorch_model.deploy(
-        instance_type='ml.m5.2xlarge', 
-        # instance_type='ml.c6gn.2xlarge', 
-        # instance_type='ml.c6gn.2xlarge',
-        initial_instance_count=1, 
-        endpoint_name=f'{model_save_name}'[-63:])
-    # import pdb; pdb.set_trace()
+    
+    # predictor = pytorch_model.deploy(instance_type='ml.m5.2xlarge', initial_instance_count=1, endpoint_name=f'{model_save_name}')
+    # # import pdb; pdb.set_trace()
     # print_message(response, logger=logger)
 
+    from sagemaker.serverless import ServerlessInferenceConfig
     
+    serverless_config = ServerlessInferenceConfig(
+        memory_size_in_mb=3072,
+        max_concurrency=10,
+    )
+
+    pytorch_model.deploy(serverless_inference_config=serverless_config)

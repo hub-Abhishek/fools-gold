@@ -41,8 +41,8 @@ def set_token(secrets, api_token=None, replicate_api_token=None):
     #     os.environ["HUGGINGFACEHUB_API_TOKEN"] = secrets['HUGGINGFACEHUB_API_TOKEN']
     #     os.environ["REPLICATE_API_TOKEN"] = secrets['REPLICATE_API_TOKEN']
     # else:
-    os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token if api_token else secrets['HUGGINGFACEHUB_API_TOKEN']
-    os.environ["REPLICATE_API_TOKEN"] = replicate_api_token if replicate_api_token else secrets['REPLICATE_API_TOKEN']
+    # os.environ["HUGGINGFACEHUB_API_TOKEN"] = api_token if api_token else secrets['HUGGINGFACEHUB_API_TOKEN']
+    os.environ["REPLICATE_API_TOKEN"] = (replicate_api_token if replicate_api_token else secrets['REPLICATE_API_TOKEN']) or 'Not Found'
 
 def print_message(message, st=None, logger=None, print_message=True):
     if st:
