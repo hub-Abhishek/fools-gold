@@ -46,7 +46,7 @@ if __name__ == '__main__':
         
         chatbot.process_file(sidebar_data['uploaded_file'])
         
-        query = prompt_container.chat_input(placeholder="Memento mori!", disabled=False)  
+        query = prompt_container.chat_input(placeholder="", disabled=False)  
 
         if query:  
             frontend.write_new_query(query, "user")
