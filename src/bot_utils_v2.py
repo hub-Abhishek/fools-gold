@@ -33,6 +33,8 @@ class embeddings_function(EmbeddingFunction):
             all_returned_json = []
             for i in tqdm(range(0, len(texts), 5)):
                 returned_json = self.call_url(texts[i:i+5])
+                # import time
+                # time.sleep(5)
                 print(returned_json)
                 all_returned_json += eval(returned_json)
             return all_returned_json

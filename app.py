@@ -4,7 +4,7 @@ import streamlit as st
 from src.utils import get_args, load_config, set_token, print_message, get_logger, get_secrets
 # from src.doc_utils import process_file
 # from src.text_preprocessing import get_chunks
-from src.chatbot_v2 import bot
+from src.chatbot_v3 import bot
 from src.app_utils import frontend_manager
 
 if __name__ == '__main__':
